@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#Execution: start_service.sh <server_name>
+
 service="$1"
 
 #check if service is running
@@ -25,6 +27,10 @@ then
 fi
 
 echo "$service is running"
+
+#change status of the variable to notify client,  (an attempt to work with a shared variable in a shared file for communication between the two VMs)
+sed -i 's/serverOn=.*/serverOn=1/' /media/sf_shared_between-VMs/notify_status.sh
+
 
 #system reboots. However password is still required to login
 
