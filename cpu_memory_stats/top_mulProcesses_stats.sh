@@ -10,7 +10,7 @@ PID=$(pgrep ${PNAME} -d ',')
 top -b -d 1 -p $PID | awk \
     -v cpuLog="$LOG_FILE" -v pid="$PID" -v pname="$PNAME" '
     /^top -/{time = $3}
-    $1+0>0 {printf "%s %s;%s[%s];CPU_Usage;%.1f;Mem_Usage;%.1f\n", \
-            strftime("%Y-%m-%d"), time, $12, $1, $9, $10 > cpuLog
+    $1+0>0 {printf "%s;%s;%s[%s];VIRT(KiB);%.0f;RES(KiB);%.0f;SHR(KiB);%.0f;CPU_Usage;%.1f;Mem_Usage;%.1f\n", \
+            strftime("%Y-%m-%d"), time, $12, $1,$5,$6,$7, $9, $10 > cpuLog
             fflush(cpuLog)}'
 
