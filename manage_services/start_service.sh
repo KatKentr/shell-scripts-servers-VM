@@ -14,7 +14,7 @@ testName="$4"
 
 #create directory to store server side test results(if it does not exist)
 dateIs=$(date +"%Y_%m_%d")
-mkdir ~/Desktop/test_results/${serverName}_results/${dateIs}
+mkdir ~/Desktop/test_results/${service}_results/${dateIs}
 
 source parse_functions
 
@@ -39,10 +39,13 @@ rampup=${strarr[1]}
 requests=${strarr[2]}
 
 #write values to the common file, so that client machine can read it
-
+sed -i "s/serverName=.*/serverName=${service}/" /media/sf_shared_between-VMs/notify_status.sh
 sed -i "s/users=.*/users=${users}/" /media/sf_shared_between-VMs/notify_status.sh
-sed -i "s/users=.*/rampup=${rampup}/" /media/sf_shared_between-VMs/notify_status.sh
+sed -i "s/rampup=.*/rampup=${rampup}/" /media/sf_shared_between-VMs/notify_status.sh
 sed -i "s/requests=.*/requests=${requests}/" /media/sf_shared_between-VMs/notify_status.sh
+
+#wait for script in client to parse test params
+sleep 5s
 
 
 #now=$(date +"%Y.%m.%d-%H.%M.%S")
@@ -72,14 +75,15 @@ fi
 echo "$service is running"
 
 #change status of the variable to notify client,  (an attempt to work with a shared variable in a shared file for communication between the two VMs)
-sed -i 's/serverOn=.*/serverOn=1/' /media/sf_shared_between-VMs/notify_status.sh
+sed -i 's/On=.*/On=1/' /media/sf_shared_between-VMs/notify_status.sh
 
+#echo "variable changed"
 #start memory monitoring
 
 #source ~/Desktop/shell_scripts_VM_Servers/cpu_memory_stats/top_mulProcesses_stats.sh ${service} output_top_mulProcesses_stats_${now}.csv
 
 #start the script in the background and give back control to the script start_service.sh
-bash ~/Desktop/shell_scripts_VM_Servers/cpu_memory_stats/top_mulProcesses_stats.sh ${service} ~/Desktop/test_results/${service}_results/${dateIs}/output_top_mulProcesses_stats_${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S").csv &
+bash ~/Desktop/shell_scripts_VM_Servers/cpu_memory_stats/top_mulProcesses_stats.sh ${service} ~/Desktop/test_results/${service}_results/${dateIs}/output_top_mulProcesses_stats_${testName}_${users}_$(date +"%Y.%m.%d-%H:%M:%S").csv &
 
 pidIs=$!
 echo $pidIs
@@ -101,7 +105,13 @@ pkill -f top_mulProcesses_stats.sh
 echo "$testStatus ,test  is over"
 
 
-#sleep 3s
+#stop server
+echo "1234" | sudo -S systemctl stop ${service}
+   
+#change status of the variable back to 0 (server of)
+sed -i 's/On=.*/On=0/' /media/sf_shared_between-VMs/notify_status.sh
+
+sleep 5s
 
 # another way to kill the process, it worked by executing with bash.Thought: Could it work with source?
 #kill -SIGTERM $pidIs          # Give the process a chance to shut down
@@ -112,4 +122,4 @@ echo "$testStatus ,test  is over"
 
 #system reboots. However password is still required to login
 
-#echo "1234" | sudo -S reboot
+echo "1234" | sudo -S reboot

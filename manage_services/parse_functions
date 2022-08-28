@@ -1,0 +1,19 @@
+#function to parse the specific line of the testData
+
+#should return the line as string
+function getTestCase() {
+
+FILE=$1
+lineNo=$2
+i=0
+while read line; do
+  i=$(( i + 1 ))
+  case $i in $lineNo) echo "$line";
+  testCase=$line
+  break;; esac
+done <"$FILE"
+
+} 
+
+#function to split the string in variables, input: string, output: array
+
