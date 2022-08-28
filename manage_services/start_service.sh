@@ -27,10 +27,6 @@ IFS=','
 #Read the split words into an array based on comma delimiter
 read -a strarr <<< "$testCase"
 
-#Print the splitted words
-echo "users : ${strarr[0]}"
-echo "rampup : ${strarr[1]}"
-echo "requests: ${strarr[2]}"
 
 #assign to variables
 
@@ -44,8 +40,13 @@ sed -i "s/users=.*/users=${users}/" /media/sf_shared_between-VMs/notify_status.s
 sed -i "s/rampup=.*/rampup=${rampup}/" /media/sf_shared_between-VMs/notify_status.sh
 sed -i "s/requests=.*/requests=${requests}/" /media/sf_shared_between-VMs/notify_status.sh
 
+#Print the splitted words
+echo "users : ${strarr[0]}"
+echo "rampup : ${strarr[1]}"
+echo "requests: ${strarr[2]}"
+
 #wait for script in client to parse test params
-sleep 5s
+sleep 6s
 
 
 #now=$(date +"%Y.%m.%d-%H.%M.%S")
@@ -88,6 +89,8 @@ bash ~/Desktop/shell_scripts_VM_Servers/cpu_memory_stats/top_mulProcesses_stats.
 pidIs=$!
 echo $pidIs
 
+sleep 3s
+
 #retrieve value of the variable testStarted
 testStatus=$(awk -F'=' '/^testStatus/ {print $2}' /media/sf_shared_between-VMs/notify_status.sh)
 echo $testStatus
@@ -111,7 +114,7 @@ echo "1234" | sudo -S systemctl stop ${service}
 #change status of the variable back to 0 (server of)
 sed -i 's/On=.*/On=0/' /media/sf_shared_between-VMs/notify_status.sh
 
-sleep 5s
+#sleep 5s
 
 # another way to kill the process, it worked by executing with bash.Thought: Could it work with source?
 #kill -SIGTERM $pidIs          # Give the process a chance to shut down
@@ -122,4 +125,4 @@ sleep 5s
 
 #system reboots. However password is still required to login
 
-echo "1234" | sudo -S reboot
+#echo "1234" | sudo -S reboot
