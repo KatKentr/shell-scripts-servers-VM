@@ -12,9 +12,6 @@ line_no=$3
 
 testName="$4"
 
-#create directory to store server side test results(if it does not exist)
-dateIs=$(date +"%Y_%m_%d")
-mkdir ~/Desktop/test_results/${service}_results/${dateIs}
 
 source parse_functions
 
@@ -34,11 +31,25 @@ users=${strarr[0]}
 rampup=${strarr[1]}
 requests=${strarr[2]}
 
+#create directory to store server side test results(if it does not exist)
+#Attention!: Directory should be changed to be the shared folder
+dateIs=$(date +"%Y_%m_%d")
+mkdir ~/Desktop/test_results/${service}_results/${testName}/${users}_users/${dateIs}
+
+
+
+#directory to move the result file(not implemented yet)
+dateIs=$(date +"%Y_%m_%d")
+pathIs=/media/sf_test_results/${testName}/${service}/${users}_users/${dateIs}/
+
+
+
 #write values to the common file, so that client machine can read it
 sed -i "s/serverName=.*/serverName=${service}/" /media/sf_shared_between-VMs/notify_status.sh
 sed -i "s/users=.*/users=${users}/" /media/sf_shared_between-VMs/notify_status.sh
 sed -i "s/rampup=.*/rampup=${rampup}/" /media/sf_shared_between-VMs/notify_status.sh
 sed -i "s/requests=.*/requests=${requests}/" /media/sf_shared_between-VMs/notify_status.sh
+sed -i "s/var=.*/var=${testName}/" /media/sf_shared_between-VMs/notify_status.sh
 
 #Print the splitted words
 echo "users : ${strarr[0]}"
@@ -84,7 +95,8 @@ sed -i 's/On=.*/On=1/' /media/sf_shared_between-VMs/notify_status.sh
 #source ~/Desktop/shell_scripts_VM_Servers/cpu_memory_stats/top_mulProcesses_stats.sh ${service} output_top_mulProcesses_stats_${now}.csv
 
 #start the script in the background and give back control to the script start_service.sh
-bash ~/Desktop/shell_scripts_VM_Servers/cpu_memory_stats/top_mulProcesses_stats.sh ${service} ~/Desktop/test_results/${service}_results/${dateIs}/output_top_mulProcesses_stats_${testName}_${users}_$(date +"%Y.%m.%d-%H:%M:%S").csv &
+#Attention: path of the output file should be changed to shared folder
+bash ~/Desktop/shell_scripts_VM_Servers/cpu_memory_stats/top_mulProcesses_stats.sh ${service} ~/Desktop/test_results/${service}_results/${testName}/${users}_users/${dateIs}/output_top_mulProcesses_stats_${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S").csv &
 
 pidIs=$!
 echo $pidIs
