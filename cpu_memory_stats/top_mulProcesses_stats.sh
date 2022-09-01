@@ -2,9 +2,13 @@
 #Execution: ./top_process_stats.sh <process_name> <path_to_output_file>
 #Example: ./top_process_stats.sh firefox output_top_bash.txt 
 #!/bin/bash
-PNAME="$1"
-LOG_FILE="$2"
-PID=$(pgrep ${PNAME} -d ',')
+PNAME1="$1"
+PNAME2="$2"
+LOG_FILE="$3"
+PID1=$(pgrep ${PNAME1} -d ',')
+PID2=$(pgrep ${PNAME2} -d ',')
+PID="${PID1},${PID2}"
+
 #PID=$(pidof ${PNAME})
 
 top -b -d 1 -p $PID | awk \
