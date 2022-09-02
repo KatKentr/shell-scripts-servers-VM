@@ -34,13 +34,14 @@ requests=${strarr[2]}
 #create directory to store server side test results(if it does not exist)
 #Attention!: Directory should be changed to be the shared folder
 dateIs=$(date +"%Y_%m_%d")
-mkdir ~/Desktop/test_results/${service}_results/${testName}/${users}_users/${dateIs}
+#mkdir ~/Desktop/test_results/${service}_results/${testName}/${users}_users/${dateIs}
+mkdir /media/sf_test_results/${testName}/${service}/${users}_users/${dateIs}
 
 
 
 #directory to move the result file(not implemented yet)
 dateIs=$(date +"%Y_%m_%d")
-pathIs=/media/sf_test_results/${testName}/${service}/${users}_users/${dateIs}/
+pathIs=/media/sf_test_results/${testName}/${service}/${users}_users/${dateIs}
 
 
 
@@ -96,7 +97,7 @@ sed -i 's/On=.*/On=1/' /media/sf_shared_between-VMs/notify_status.sh
 
 #start the script in the background and give back control to the script start_service.sh
 #Attention: path of the output file should be changed to shared folder
-bash ~/Desktop/shell_scripts_VM_Servers/cpu_memory_stats/top_mulProcesses_stats.sh ${service} ~/Desktop/test_results/${service}_results/${testName}/${users}_users/${dateIs}/output_top_mulProcesses_stats_${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S").csv &
+bash ~/Desktop/shell_scripts_VM_Servers/cpu_memory_stats/top_mulProcesses_stats.sh ${service} pathIs/output_top_mulProcesses_stats_${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S").csv &
 
 pidIs=$!
 echo $pidIs
