@@ -3,11 +3,16 @@
 #Example: ./top_process_stats.sh firefox output_top_bash.txt 
 #!/bin/bash
 PNAME1="$1"
-PNAME2="$2"
-LOG_FILE="$3"
+LOG_FILE="$2"
 PID1=$(pgrep ${PNAME1} -d ',')
-PID2=$(pgrep ${PNAME2} -d ',')
-PID="${PID1},${PID2}"
+if [ $PNAME1="apache2" ] || [ $PNAME1="nginx" ] ;
+then
+  PNAME2="php-fpm"
+  PID2=$(pgrep ${PNAME2} -d ',')
+  PID="${PID1},${PID2}"
+else
+PID=$PID1
+fi
 
 #PID=$(pidof ${PNAME})
 
