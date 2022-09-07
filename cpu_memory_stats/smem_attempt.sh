@@ -3,8 +3,8 @@
 #!/bin/bash
 
 PNAME1="$1"
-PNAME2="$1"
-LOG_FILE="$2"
+PNAME2="$2"
+LOG_FILE="$3"
 
 : '
 while true ; do
@@ -17,7 +17,7 @@ done
 #echo "1234" | sudo -S systemctl start ${service}
 
 while true ; do
-    echo "$(date)"," $(echo "1234" | sudo smem --mapfilter="php" -t | tail -n 1)" >> $LOG_FILE
-    echo "$(date)"," $(echo "1234" | sudo smem --mapfilter="apache" -t | tail -n 1)" >> $LOG_FILE
+    echo "$(date)"," $(echo "1234" | sudo smem --mapfilter=${PNAME1} -t | tail -n 1)" >> $LOG_FILE
+    echo "$(date)"," $(echo "1234" | sudo smem --mapfilter=${PNAME2} -t | tail -n 1)" >> $LOG_FILE
     sleep 5
 done    
