@@ -3,8 +3,7 @@
 #!/bin/bash
 
 PNAME1="$1"
-PNAME2="$2"
-LOG_FILE="$3"
+LOG_FILE="$2"
 
 : '
 while true ; do
@@ -13,6 +12,11 @@ while true ; do
     sleep 1
 done
 '
+
+if [ $PNAME1="apache2" ] || [ $PNAME1="nginx" ] ;
+then
+  PNAME2="php-fpm"
+fi
 
 #echo "1234" | sudo -S systemctl start ${service}
 
