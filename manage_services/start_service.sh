@@ -88,7 +88,7 @@ fi
 echo "$service is running"
 
 #change status of the variable to notify client,  (an attempt to work with a shared variable in a shared file for communication between the two VMs)
-sed -i 's/On=.*/On=1/' /media/sf_shared_between-VMs/notify_status.sh
+#sed -i 's/On=.*/On=1/' /media/sf_shared_between-VMs/notify_status.sh
 
 #echo "variable changed"
 #start memory monitoring
@@ -118,7 +118,7 @@ fi
 
 PNAME1=$service
 
-LOG_FILE=${pathIs}/output_smem_stats_${testName}_${users}_${dateIs}.csv
+LOG_FILE=${pathIs}/output_smem_stats_${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S").csv
 
 #wait until testStatus turns to 0 (end of test)
 
