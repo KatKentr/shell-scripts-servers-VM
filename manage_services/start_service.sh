@@ -97,26 +97,71 @@ sed -i 's/On=.*/On=1/' /media/sf_shared_between-VMs/notify_status.sh
 
 #start the script in the background and give back control to the script start_service.sh
 #Attention: path of the output file should be changed to shared folder
-bash ~/Desktop/shell_scripts_VM_Servers/cpu_memory_stats/top_mulProcesses_stats.sh ${service} pathIs/output_top_mulProcesses_stats_${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S").csv &
+#bash ~/Desktop/shell_scripts_VM_Servers/cpu_memory_stats/smem_attempt.sh ${service} ${pathIs}/output_smem_stats_${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S").csv &
 
-pidIs=$!
-echo $pidIs
+#bash ~/Desktop/shell_scripts_VM_Servers/cpu_memory_stats/top_mulProcesses_stats.sh ${service} ${pathIs}/output_top_mulProcesses_stats_${testName}_${users}_${dateIs}.csv &
 
-sleep 3s
+#pidIs=$!
+#echo $pidIs
+
+#attempt to retrieve the child processes of the process
+#chProc=$(ps -o pid= --ppid $pidIs)
+
+#echo "$chProc"
+#sleep 3s
+
+
+if [ $service="apache2" ] || [ $service="nginx" ] ;
+then
+  PNAME2="php-fpm"
+fi
+
+PNAME1=$service
+
+LOG_FILE=${pathIs}/output_smem_stats_${testName}_${users}_${dateIs}.csv
+
+#wait until testStatus turns to 0 (end of test)
+
+sleep 4s
 
 #retrieve value of the variable testStarted
 testStatus=$(awk -F'=' '/^testStatus/ {print $2}' /media/sf_shared_between-VMs/notify_status.sh)
 echo $testStatus
 
-#wait until testStatus turns to 0 (end of test)
-
 while [ $testStatus -eq 1 ]
 do
+ echo "$(date)","${PNAME1}"," $(echo "1234" | sudo smem -c "pss" --mapfilter=${PNAME1} -t | tail -n 1)" >> $LOG_FILE
+ echo "$(date)","${PNAME2}"," $(echo "1234" | sudo smem -c "pss" --mapfilter=${PNAME2} -t | tail -n 1)" >> $LOG_FILE
  testStatus=$(awk -F'=' '/^testStatus/ {print $2}' /media/sf_shared_between-VMs/notify_status.sh)
+ sleep 10
 done
 
 #Since test is over kill memory monitoring script. (to get a process name for a shell script it needs to be executed with bash, otherwise command name is bash). 
-pkill -f top_mulProcesses_stats.sh
+
+#kill $(ps -o pid= --ppid $pidIs)
+
+#kill -9 $pidIs
+
+#pkill -P $pidIs
+
+: '
+#find process that uses the file and kill it.
+
+getProcessId=$(fuser ${pathIs}/output_top_mulProcesses_stats_${testName}_${users}_${dateIs}.csv)
+
+# Set comma as delimiter
+IFS=''
+
+#Read the split words into an array based on comma delimiter
+read -a prarr <<< "$getProcessId"
+
+pidOfFile=${prarr[1]}
+
+echo "$pidOfFile"
+
+kill -9 $pidOfFile
+
+ '
 
 echo "$testStatus ,test  is over"
 
@@ -127,7 +172,7 @@ echo "1234" | sudo -S systemctl stop ${service}
 #change status of the variable back to 0 (server of)
 sed -i 's/On=.*/On=0/' /media/sf_shared_between-VMs/notify_status.sh
 
-#sleep 5s
+sleep 5s
 
 # another way to kill the process, it worked by executing with bash.Thought: Could it work with source?
 #kill -SIGTERM $pidIs          # Give the process a chance to shut down
