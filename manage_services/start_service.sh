@@ -65,7 +65,7 @@ then
 else
    #start a service
    echo "1234" | sudo -S systemctl start ${service}
-   sleep 300
+   sleep 3
 fi
 
 #check if service is running
@@ -104,7 +104,7 @@ do
  echo "$(date)","${PNAME1}"," $(echo "1234" | sudo smem -c "pss" --mapfilter=${PNAME1} -t | tail -n 1)" >> $LOG_FILE
  echo "$(date)","${PNAME2}"," $(echo "1234" | sudo smem -c "pss" --mapfilter=${PNAME2} -t | tail -n 1)" >> $LOG_FILE
  testStatus=$(awk -F'=' '/^testStatus/ {print $2}' /media/sf_shared_between-VMs/notify_status.sh)
- sleep 10
+ sleep 60
 done
 
 
