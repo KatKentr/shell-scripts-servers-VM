@@ -32,6 +32,7 @@ requests=${strarr[2]}
 #create directory to store server side test results(if it does not exist)
 dateIs=$(date +"%Y_%m_%d")
 #mkdir ~/Desktop/test_results/${service}_results/${testName}/${users}_users/${dateIs}
+mkdir /media/sf_test_results/${testName}/${service}/${users}_users
 mkdir /media/sf_test_results/${testName}/${service}/${users}_users/${dateIs}
 
 
@@ -64,7 +65,7 @@ then
 else
    #start a service
    echo "1234" | sudo -S systemctl start ${service}
-   sleep 3
+   sleep 300
 fi
 
 #check if service is running
