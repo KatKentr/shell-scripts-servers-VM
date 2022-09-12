@@ -84,7 +84,7 @@ echo "$service is running"
 #add php to memory monitoring
 if [ $service="apache2" ] || [ $service="nginx" ] ;
 then
-  PNAME2="php-fpm"
+  PNAME2="php-fpm8.1"
 fi
 
 PNAME1=$service
@@ -98,15 +98,19 @@ sleep 4s
 testStatus=$(awk -F'=' '/^testStatus/ {print $2}' /media/sf_shared_between-VMs/notify_status.sh)
 echo $testStatus
 
+#initialize number of samples
+count=0
+
 #wait until testStatus turns to 0 (end of test)
 while [ $testStatus -eq 1 ]
 do
- echo "$(date)","${PNAME1}"," $(echo "1234" | sudo smem -c "pss" --mapfilter=${PNAME1} -t | tail -n 1)" >> $LOG_FILE
- echo "$(date)","${PNAME2}"," $(echo "1234" | sudo smem -c "pss" --mapfilter=${PNAME2} -t | tail -n 1)" >> $LOG_FILE
+ echo "d-$(date +"%Y.%m.%d-%H.%M.%S")","$(ps -C ${PNAME1},${PNAME2} -o rss)" >> $LOG_FILE
+ ((count++))
  testStatus=$(awk -F'=' '/^testStatus/ {print $2}' /media/sf_shared_between-VMs/notify_status.sh)
- sleep 60
+ sleep 120
 done
 
+echo "$count ","samples" >> $LOG_FILE
 
 echo "$testStatus ,test  is over"
 
