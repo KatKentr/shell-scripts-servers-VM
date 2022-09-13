@@ -89,10 +89,16 @@ fi
 
 PNAME1=$service
 
-LOG_FILE=${pathIs}/output_smem_stats_${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S").csv
+LOG_FILE1=${pathIs}/cpu_stats_${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S").csv
+LOG_FILE2=${pathIs}/mem_stats_${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S").csv
 
+#start cpu monitoring every 10 seconds
+vmstat -t -n 10  >> $LOG_FILE1 &
 
-sleep 4s
+#retrive id of the process
+pidIs=$!
+
+sleep 3s
 
 #retrieve value of the variable testStatus
 testStatus=$(awk -F'=' '/^testStatus/ {print $2}' /media/sf_shared_between-VMs/notify_status.sh)
@@ -104,13 +110,16 @@ count=0
 #wait until testStatus turns to 0 (end of test)
 while [ $testStatus -eq 1 ]
 do
- echo "d-$(date +"%Y.%m.%d-%H.%M.%S")","$(ps -C ${PNAME1},${PNAME2} -o rss)" >> $LOG_FILE
+ echo "d-$(date +"%Y.%m.%d-%H.%M.%S")","$(ps -C ${PNAME1},${PNAME2} -o rss)" >> $LOG_FILE2
  ((count++))
  testStatus=$(awk -F'=' '/^testStatus/ {print $2}' /media/sf_shared_between-VMs/notify_status.sh)
  sleep 120
 done
 
-echo "$count ","samples" >> $LOG_FILE
+echo "$count ","samples" >> $LOG_FILE2
+
+#stop monitoring of CPU
+kill -9 $pidIs
 
 echo "$testStatus ,test  is over"
 
