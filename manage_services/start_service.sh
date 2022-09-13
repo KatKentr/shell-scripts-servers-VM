@@ -89,8 +89,8 @@ fi
 
 PNAME1=$service
 
-LOG_FILE1=${pathIs}/cpu_stats_${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S").csv
-LOG_FILE2=${pathIs}/mem_stats_${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S").csv
+LOG_FILE1=${pathIs}/${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S")_stats_cpu.csv
+LOG_FILE2=${pathIs}/${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S")_stats_mem.csv
 
 #start cpu monitoring every 10 seconds
 vmstat -t -n 10  >> $LOG_FILE1 &
