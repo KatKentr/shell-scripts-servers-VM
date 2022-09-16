@@ -89,11 +89,11 @@ fi
 
 PNAME1=$service
 
-LOG_FILE1=${pathIs}/${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S")_stats_cpu.csv
-LOG_FILE2=${pathIs}/${testName}_${users}_$(date +"%Y.%m.%d-%H.%M.%S")_stats_mem.csv
+LOG_FILE1=${pathIs}/${users}Users_${testName}_$(date +"%Y.%m.%d-%H.%M.%S")_stats_cpu.csv
+LOG_FILE2=${pathIs}/${users}Users_${testName}_$(date +"%Y.%m.%d-%H.%M.%S")_stats_mem.csv
 
 #start cpu monitoring every 10 seconds
-vmstat -t -n 10  >> $LOG_FILE1 &
+vmstat -t -n 5 >> $LOG_FILE1 &
 
 #retrive id of the process
 pidIs=$!
@@ -113,7 +113,7 @@ do
  echo "d-$(date +"%Y.%m.%d-%H.%M.%S")","$(ps -C ${PNAME1},${PNAME2} -o rss)" >> $LOG_FILE2
  ((count++))
  testStatus=$(awk -F'=' '/^testStatus/ {print $2}' /media/sf_shared_between-VMs/notify_status.sh)
- sleep 120
+ sleep 10
 done
 
 echo "$count ","samples" >> $LOG_FILE2
@@ -128,7 +128,7 @@ echo "$testStatus ,test  is over"
 echo "1234" | sudo -S systemctl stop ${service}
    
 
-sleep 5s
+sleep 2s
 
 # another way to kill the process, it worked by executing with bash.Thought: Could it work with source?
 #kill -SIGTERM $pidIs          # Give the process a chance to shut down
