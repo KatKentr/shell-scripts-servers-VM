@@ -113,7 +113,7 @@ do
  echo "d-$(date +"%Y.%m.%d-%H.%M.%S")","$(ps -C ${PNAME1},${PNAME2} -o rss)" >> $LOG_FILE2
  ((count++))
  testStatus=$(awk -F'=' '/^testStatus/ {print $2}' /media/sf_shared_between-VMs/notify_status.sh)
- sleep 10
+ sleep 5
 done
 
 echo "$count ","samples" >> $LOG_FILE2
