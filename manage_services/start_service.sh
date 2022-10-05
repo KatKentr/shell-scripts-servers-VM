@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 #Execution: start_service.sh <server_name> <test_params_file> <test_case> <test_name>
@@ -93,12 +94,12 @@ LOG_FILE1=${pathIs}/${users}Users_${testName}_$(date +"%Y.%m.%d-%H.%M.%S")_stats
 LOG_FILE2=${pathIs}/${users}Users_${testName}_$(date +"%Y.%m.%d-%H.%M.%S")_stats_mem.csv
 
 #start cpu monitoring every 10 seconds
-vmstat -t -n 5 >> $LOG_FILE1 &
+vmstat -t -n 1 >> $LOG_FILE1 &
 
 #retrive id of the process
 pidIs=$!
 
-sleep 3s
+sleep 1s
 
 #retrieve value of the variable testStatus
 testStatus=$(awk -F'=' '/^testStatus/ {print $2}' /media/sf_shared_between-VMs/notify_status.sh)
@@ -113,7 +114,7 @@ do
  echo "d-$(date +"%Y.%m.%d-%H.%M.%S")","$(ps -C ${PNAME1},${PNAME2} -o rss)" >> $LOG_FILE2
  ((count++))
  testStatus=$(awk -F'=' '/^testStatus/ {print $2}' /media/sf_shared_between-VMs/notify_status.sh)
- sleep 5
+ sleep 1
 done
 
 echo "$count ","samples" >> $LOG_FILE2
