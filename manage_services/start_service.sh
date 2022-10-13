@@ -66,7 +66,9 @@ if [ "$service" != "go" ]; then
    if [ $service="apache2" ] || [ $service="nginx" ] ;
    then
      PNAME2="php-fpm8.1"
-     PNAME=$PNAME","$PNAME2
+     #PNAME=$PNAME","$PNAME2  eskage error to ps den to anagnwrize
+     #echo "$PNAME"
+     
    fi
 
        #Remember: 0 is true in bash!
@@ -76,7 +78,7 @@ if [ "$service" != "go" ]; then
    else
       #start a service
       echo "1234" | sudo -S systemctl start ${service}
-      sleep 2
+      sleep 1s
    fi
    
    #check if service is running
@@ -113,7 +115,7 @@ LOG_FILE1=${pathIs}/${users}Users_${testName}_$(date +"%Y.%m.%d-%H.%M.%S")_stats
 LOG_FILE2=${pathIs}/${users}Users_${testName}_$(date +"%Y.%m.%d-%H.%M.%S")_stats_mem.csv
 
 #start cpu monitoring every 10 seconds
-vmstat -t -n 2 >> $LOG_FILE1 &
+vmstat -t -n 1 >> $LOG_FILE1 &
 
 #retrive id of the process
 pidIs=$!
@@ -130,10 +132,10 @@ count=0
 #wait until testStatus turns to 0 (end of test)
 while [ $testStatus -eq 1 ]
 do
- echo "d-$(date +"%Y.%m.%d-%H.%M.%S")","$(ps -C ${PNAME} -o rss)" >> $LOG_FILE2
+ echo "d-$(date +"%Y.%m.%d-%H.%M.%S")","$(ps -C ${PNAME},${PNAME2} -o rss)" >> $LOG_FILE2
  ((count++))
  testStatus=$(awk -F'=' '/^testStatus/ {print $2}' /media/sf_shared_between-VMs/notify_status.sh)
- sleep 2
+ sleep 1
 done
 
 echo "$count ","samples" >> $LOG_FILE2
