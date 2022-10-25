@@ -60,17 +60,18 @@ echo "requests: ${strarr[2]}"
 
 PNAME=$service
 
-if [ "$service" != "go" ]; then
+#echo "service is: ${service}"
+
+if [ "$service" = "apache2" ] || [ "$service" = "nginx" ]; then
 
    #add php to memory monitoring
-   if [ $service="apache2" ] || [ $service="nginx" ] ;
-   then
+   
+     echo "in apache2,nginx block"
+
      PNAME2="php-fpm8.1"
      #PNAME=$PNAME","$PNAME2  eskage error to ps den to anagnwrize
      #echo "$PNAME"
      
-   fi
-
        #Remember: 0 is true in bash!
    if  pidof ${service} > /dev/null
    then
@@ -92,7 +93,9 @@ if [ "$service" != "go" ]; then
    fi
 
    
-else
+elif [ "$service" = "go" ]; then
+
+ echo "in go block"
  #name of the binary file, in the case of the Go server
  PNAME="server"
  
@@ -105,6 +108,19 @@ else
  
  sleep 1s
 
+#this is the case of nodejs
+else
+
+ echo "in node block"
+
+ cd ~/nodeProjects/myserver/
+ 
+ #start node server
+ ${PNAME} server.js &
+ pidServer=$!
+ 
+ sleep 1.5s
+ 
 fi
 
 echo "$service is running"
@@ -115,7 +131,7 @@ LOG_FILE1=${pathIs}/${users}Users_${testName}_$(date +"%Y.%m.%d-%H.%M.%S")_stats
 LOG_FILE2=${pathIs}/${users}Users_${testName}_$(date +"%Y.%m.%d-%H.%M.%S")_stats_mem.csv
 
 #start cpu monitoring every 10 seconds
-vmstat -t -n 1 >> $LOG_FILE1 &
+vmstat -t -n 2 >> $LOG_FILE1 &
 
 #retrive id of the process
 pidIs=$!
@@ -129,13 +145,13 @@ echo $testStatus
 #initialize number of samples
 count=0
 
-#wait until testStatus turns to 0 (end of test)
+#start memory monitoring and wait until testStatus turns to 0 (end of test)
 while [ $testStatus -eq 1 ]
 do
- echo "d-$(date +"%Y.%m.%d-%H.%M.%S")","$(ps -C ${PNAME},${PNAME2} -o rss)" >> $LOG_FILE2
+ echo "d-$(date +"%Y.%m.%d-%H.%M.%S")","$(ps -C ${PNAME} -o rss)" >> $LOG_FILE2
  ((count++))
  testStatus=$(awk -F'=' '/^testStatus/ {print $2}' /media/sf_shared_between-VMs/notify_status.sh)
- sleep 1
+ sleep 2
 done
 
 echo "$count ","samples" >> $LOG_FILE2
@@ -146,9 +162,9 @@ kill -9 $pidIs
 echo "$testStatus ,test  is over"
 
 #stop server
-if [ "$service" != "go" ]; then
+if [ "$service" = "apache2" ] || [ "$service" = "nginx" ]; then
 
-   
+   echo "toping ngin or apache2"
    echo "1234" | sudo -S systemctl stop ${service}
    
 else
