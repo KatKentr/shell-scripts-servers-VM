@@ -119,7 +119,7 @@ else
  ${PNAME} server.js &
  pidServer=$!
  
- sleep 1.5s
+ sleep 2s
  
 fi
 
@@ -168,8 +168,11 @@ if [ "$service" = "apache2" ] || [ "$service" = "nginx" ]; then
    echo "1234" | sudo -S systemctl stop ${service}
    
 else
-
-   kill -9 $pidServer
+   #one process
+   #kill -9 $pidServer
+   
+   #many processes
+   killall ${service} -9
      
 fi
 
