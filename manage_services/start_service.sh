@@ -100,7 +100,7 @@ elif [ "$service" = "go" ]; then
  PNAME="server"
  
  #start go server
- cd ~/go/bin/
+ cd ~/goProjects/serverProject/server
  
  ./${PNAME} -testcase=${testName} &
  
@@ -131,7 +131,7 @@ LOG_FILE1=${pathIs}/${users}Users_${testName}_$(date +"%Y.%m.%d-%H.%M.%S")_stats
 LOG_FILE2=${pathIs}/${users}Users_${testName}_$(date +"%Y.%m.%d-%H.%M.%S")_stats_mem.csv
 
 #start cpu monitoring every 10 seconds
-vmstat -t -n 2 >> $LOG_FILE1 &
+vmstat -t -n 1 >> $LOG_FILE1 &
 
 #retrive id of the process
 pidIs=$!
@@ -151,7 +151,7 @@ do
  echo "d-$(date +"%Y.%m.%d-%H.%M.%S")","$(ps -C ${PNAME} -o rss)" >> $LOG_FILE2
  ((count++))
  testStatus=$(awk -F'=' '/^testStatus/ {print $2}' /media/sf_shared_between-VMs/notify_status.sh)
- sleep 2
+ sleep 1
 done
 
 echo "$count ","samples" >> $LOG_FILE2
@@ -172,7 +172,7 @@ else
    #kill -9 $pidServer
    
    #many processes
-   killall ${service} -9
+   killall ${PNAME} -9
      
 fi
 
